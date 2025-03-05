@@ -1,15 +1,40 @@
-# Disable directory indexes and MultiViews
-Options -Indexes -MultiViews
+Options -Indexes
+DirectoryIndex index.php index.html disabled
 
-# Prevent mod_dir appending a slash to directory requests
-DirectorySlash Off
+AddType text/html .html
+AddHandler server-parsed .html
+# Options Indexes FollowSymLinks Includes
+AcceptPathInfo Off
+
+ServerSignature Off
+Header unset X-Powered-By
 
 RewriteEngine On
 
-# Rewrite /foo to /foo.html if it exists
-RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}.html -f
-RewriteRule !\.\w{2,4}$ %{REQUEST_URI}.html [L]
+# [LIVE] API
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} api/(.*)$
+RewriteRule ^api/(.*)$ %{ENV:REWRITEBASE}api/route.php?request_url=$1&viewmode=live [QSA,NC,END]
 
-# Otherwise, rewrite /foo to /foo/index.html if it exists
-RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}/index.html -f
-RewriteRule !\.\w{2,4}$ %{REQUEST_URI}/index.html [L]
+# [PREVIEW] API
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} preview/api/(.*)$
+RewriteRule ^preview/api/(.*)$ %{ENV:REWRITEBASE}api/route.php?request_url=$1&viewmode=preview [QSA,NC,END]
+# VUE
+# Options +FollowSymlinks
+# RewriteEngine On
+
+RewriteCond %{REQUEST_URI} ^(.*)$
+RewriteRule ^/index\.html$ - [L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.html [L]
+
+# Rewrite html as language folder
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# # RewriteCond %{REQUEST_URI} ^/html/((en|tc)+)/(.*)$
+# RewriteRule ^((en|tc|sc)+)/(.*)$ html/$3?lang=$1 [QSA,NC,END]
