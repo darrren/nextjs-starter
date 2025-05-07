@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Metadata } from "next"
 import { Noto_Sans_TC, Noto_Serif_TC } from "next/font/google"
-import I18nProvider from '@/i18n/i18nProvider'
 import { supportedLngs } from '@/i18n/settings'
 import "@/app/globals.scss"
+
+// COMPONENTS
+import ClientProvider from "@/components/ClientProvider"
 
 const notoSans = Noto_Sans_TC({
   subsets: ["latin"],
@@ -47,7 +49,7 @@ export default async function RootLayout({
   return (
     <html lang={paramsValue.lang} className={`${notoSans.variable} ${notoSerif.variable} antialiased`} suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <I18nProvider>{children}</I18nProvider>
+        <ClientProvider>{children}</ClientProvider>
       </body>
     </html>
   );

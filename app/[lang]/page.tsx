@@ -1,13 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React from "react"
+import React, { useEffect } from "react"
 import { useParams, useRouter } from 'next/navigation'
 import Image from "next/image"
 import { useHookstate as UseHookstate } from '@hookstate/core'
 import globalState from '@/stores/state'
 import { useTranslation } from 'react-i18next'
+import axios from 'axios'
+import { useQuery } from "@tanstack/react-query"
+
+// i18n
 import { defaultNS } from '@/i18n/settings'
+
+interface User {
+  id: number
+  name: string
+  tel: number
+  email: string
+}
+
+const FetchUsers = () => {
+  const state = UseHookstate(globalState)
+  const { apiBaseUrl } = state
+
+  return useQuery({
+    queryKey: ["users"],
+    queryFn: async () => {
+      // const { data } = isTest.get() ? await axios.get(`${baseUrl.get()}dummyjson/getServices.json`) : await axios.get(`${apiBaseUrl.get()}/v1/getServices`)
+      const { data } = await axios.get(`${apiBaseUrl.get()}/users`)
+      return data as User[]
+    },
+  })
+}
 
 const Home = () => {
   const state = UseHookstate(globalState)
@@ -16,11 +41,16 @@ const Home = () => {
   const params = useParams()
   const { lang } = params as any
   const { t } = useTranslation([...defaultNS, 'home'], { lng: lang })
+  const { data } = FetchUsers()
+  console.log(data)
 
   const toggleLanguage = () => {
     // i18n.changeLanguage(i18n.language === 'en' ? 'tc' : 'en');
     router.push(`/${lang === 'en' ? 'tc' : 'en'}`)
   };
+
+  useEffect(() => {
+  }, [])
 
   return (
     <>
@@ -35,6 +65,16 @@ const Home = () => {
         >
           switch
         </button>
+        <br/>
+        {
+          data && data?.map((e: any, i: any) => {
+            return (
+              <div key={i}>
+                <p>{e.name}</p>
+              </div>
+            )
+          })
+        }
       </main>
       <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
         <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">

@@ -17,7 +17,7 @@ const initialState: State = {
   lang: process.env.NEXT_PUBLIC_LANG || 'en',
   isTest: false,
   baseUrl: process.env.NEXT_PUBLIC_BASE_PATH!,
-  apiBaseUrl: process.env.NEXT_PUBLIC_ENV === 'development' ? process.env.NEXT_PUBLIC_API_BASE! : process.env.NEXT_PUBLIC_API_PATH + process.env.NEXT_PUBLIC_API_BASE!,
+  apiBaseUrl: process.env.NEXT_PUBLIC_ENV === 'development' ? process.env.NEXT_PUBLIC_API_BASE! : `${process.env.NEXT_PUBLIC_API_PATH}${process.env.NEXT_PUBLIC_API_BASE!}`,
 
   // POPUP
   msgDialogVisible: false,
